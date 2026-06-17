@@ -1,191 +1,218 @@
-# NebenkostenAbrechnung - Lokale KI-gestützte Betriebskostenabrechnung
+# 🏠 NebenkostenPro – KI-gestützte Betriebskostenabrechnung
 
-> Betriebskostenabrechnung erstellen und prüfen mit lokaler KI.
-> Keine Cloud-Anbindung. Alle Daten bleiben auf deinem MacBook.
+<p align="center">
+  <strong>Betriebskostenabrechnungen erstellen, prüfen und analysieren</strong><br>
+  <em>100 % lokal – keine Cloud – alle Daten auf Ihrem MacBook</em>
+</p>
 
-## Voraussetzungen
+---
 
-- **MacBook Pro M5 mit 24GB RAM** ✅
-- **Docker Desktop** installiert und gestartet
-- **Ollama** installiert
+## 📋 Übersicht
 
-## Schnellstart
+**NebenkostenPro** ist eine lokale Web-App zur **Erstellung und KI-gestützten Prüfung** von Betriebskostenabrechnungen nach deutschem Mietrecht (BetrKV, BGB, HeizkostenV).
 
-### 1. Qwen 2.5 14B herunterladen
+| 🔧 Für Vermieter / Hausverwaltungen | 🔍 Für Mieter |
+|--------------------------------------|---------------|
+| Objekte & Mieter verwalten | Abrechnung per Upload prüfen |
+| Rechnungen/Belege erfassen | 10 automatisierte Regel-Checks |
+| KI-gestützte Belegerkennung | Zusätzliche KI-Analyse via Qwen 14B |
+| Autom. Kostenverteilung (qm/Person/Einheit) | Strukturierter Prüfbericht (PDF + MD) |
+| Professionelle PDF-Abrechnung | Nächste-Schritte-Empfehlungen |
+
+---
+
+## 🚀 Schnellstart
+
+### 1. Voraussetzungen
+
+| Was | Warum |
+|-----|-------|
+| **Docker Desktop** | App läuft als Container |
+| **Ollama** | Lokale KI für Analysen |
+| **~8 GB freier RAM** | 4 GB für Container + ~4 GB für Qwen 14B |
+
+### 2. Ollama-Modell bereitstellen
 
 ```bash
+# Qwen 2.5 14B herunterladen (empfohlen)
 ollama pull qwen2.5:14b
-```
 
-Prüfen, ob das Modell bereit ist:
-```bash
+# Alternativ kleinere Modelle (schneller):
+# ollama pull llama3.1:8b
+# ollama pull mistral:7b
+
+# Prüfen
 ollama list
 ```
 
-### 2. Ollama im Hintergrund starten
+### 3. Ollama starten
 
 ```bash
 ollama serve
 ```
+(Oder die Ollama-Desktop-App – muss auf Port 11434 laufen)
 
-Oder über die Ollama-Desktop-App. Wichtig: Ollama muss auf Port 11434 erreichbar sein.
-
-### 3. Anwendung starten
+### 4. App starten
 
 ```bash
 cd nebenkosten-app
 docker-compose up --build
 ```
 
-Beim ersten Start werden alle Abhängigkeiten automatisch installiert.
+Erster Start: ~5 Min für Build + Abhängigkeiten.
 
-### 4. Im Browser öffnen
+### 5. Im Browser öffnen
+
+➡️ **http://localhost:5000**
+
+| Benutzer | Passwort |
+|----------|----------|
+| `demo` | `demo` |
+| (Eigenen Account registrieren) | |
+
+## 🖥️ Architektur
 
 ```
-http://localhost:5000
-```
-
-**Demo-Zugang:**
-- Benutzername: `demo`
-- Passwort: `demo`
-
-## Architektur
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      Docker Container                        │
+┌──────────────────────────────────────────────────────────────┐
+│                     Docker Container                          │
+│                                                              │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │   Flask App   │  │   SQLite     │  │   Tesseract  │      │
-│  │   (Port 5000) │  │   (app.db)   │  │   (OCR)      │      │
+│  │   Flask 3.x   │  │   SQLite     │  │  Tesseract   │      │
+│  │   Port 5000   │  │   (app.db)   │  │   (OCR)      │      │
 │  └──────┬───────┘  └──────────────┘  └──────────────┘      │
 │         │                                                    │
-│         │  HTTP API (host.docker.internal:11434)            │
-│         └────────────────────────────────────────┐           │
-└──────────────────────────────────────────────────┼───────────┘
-                                                    │
-┌───────────────────────────────────────────────────┼───────────┐
-│                 Host (dein MacBook)                │           │
-│  ┌──────────────────────────────────────────────┐ │           │
-│  │  Ollama (Qwen 2.5 14B) - Port 11434         │◄┘           │
-│  └──────────────────────────────────────────────┘             │
-│                                                               │
-│  Docker Desktop verwaltet: host.docker.internal → localhost   │
-└───────────────────────────────────────────────────────────────┘
+│         │  host.docker.internal:11434                       │
+│         └──────────────────┬───────────────────────────────┘│
+│                            │                                │
+└────────────────────────────┼────────────────────────────────┘
+                             │
+┌────────────────────────────┼────────────────────────────────┐
+│          Dein MacBook      │                                │
+│  ┌─────────────────────────┴────────────┐                  │
+│  │  Ollama (Qwen 14B / llama3 / mistral)│  ← Port 11434   │
+│  └──────────────────────────────────────┘                  │
+└───────────────────────────────────────────────────────────┘
 ```
 
-## Funktionen
-
-### Für Vermieter
-- **Objektverwaltung**: Wohnobjekte mit Adresse, Fläche, Einheiten
-- **Mieterverwaltung**: Einzugsdatum, Wohnfläche, Personen, Vorauszahlungen
-- **Belege/Rechnungen**: Manuelle Eingabe oder Upload mit KI-Unterstützung
-- **Automatische Verteilung**: Nach qm, Personen, Einheiten oder 50/50 nach BetrKV
-- **PDF-Abrechnung**: Professionelles PDF nach BetrKV-Struktur
-
-### Für Mieter
-- **Abrechnung prüfen**: Upload oder Texteingabe
-- **9 automatische Prüfungen** nach BetrKV & BGB
-- **KI-gestützte Analyse** mit Qwen 14B
-- **Prüfbericht als PDF**
-
-### KI-Assistent
-- Chat-Interface für Fragen zu Betriebskosten
-- Kontextbewusst: Zugriff auf hochgeladene Dokumente
-- Läuft komplett lokal über Ollama
-
-## KI-Features im Detail
+## 🧠 KI-Features
 
 | Feature | Technologie | Beschreibung |
 |---------|-------------|--------------|
-| OCR | Tesseract (deu) | Text aus PDFs und Bildern |
-| Datenextraktion | Qwen 2.5 14B | Anbieter, Betrag, Datum, Kostenart erkennen |
-| Klassifikation | Qwen 2.5 14B | Zuordnung zu 17 BetrKV-Kategorien |
-| Abrechnungsprüfung | Qwen 2.5 14B | 9 regelbasierte Prüfungen + LLM-Analyse |
-| KI-Assistent | Qwen 2.5 14B | Fragbasierte Beratung |
+| 📄 OCR | Tesseract 5 Deutsch | Texterkennung aus PDFs & Bildern |
+| 🏷️ Belegerkennung | Qwen 2.5 14B | Anbieter, Betrag, Datum, Kostenart |
+| 🗂️ Klassifikation | Qwen 2.5 14B | 17 BetrKV-Kategorien |
+| ✅ Prüfung | 10 Checks + LLM | BetrKV, BGB, HKVO, TKG |
+| 🤖 Assistent | Qwen 2.5 14B | Chat über Mietrecht |
 
-## Dateistruktur
+### Die 10 Prüfungen
+
+1. **Abrechnungszeitraum** – Max. 12 Monate (§556 Abs. 3 BGB)
+2. **Kostenarten** – 17 BetrKV-Positionen (§2 BetrKV)
+3. **Verteilerschlüssel** – qm/Person/Einheit (§556a BGB)
+4. **Heizkosten** – Mind. 30% Verbrauch (§7 HKVO)
+5. **Nicht-umlagefähige Kosten** – Instandhaltung, Verwaltung (§1 Abs. 2 BetrKV)
+6. **Kabelanschluss** – Seit 01.07.2024 (§58 TKG)
+7. **CO₂-Kosten** – 10-Stufen-Modell (CO₂KostAufG)
+8. **Grundsteuer** – Neue Hebesätze ab 2025
+9. **Transparenz** – Vorauszahlung + Ergebnis
+10. **Abrechnungsfrist** – 12 Monate (§556 Abs. 3 BGB)
+
+## 📁 Verzeichnisstruktur
 
 ```
 nebenkosten-app/
-├── app.py                     # Flask-App, alle Routen
-├── config.py                  # Konfiguration (.env)
-├── requirements.txt           # Python-Abhängigkeiten
-├── Dockerfile                 # Container-Definition
-├── docker-compose.yml         # Docker Compose Setup
-├── .env                       # Umgebungsvariablen
+├── app.py                     # Flask-App: Routen, Logik, Worker
+├── config.py                  # Konfiguration
+├── requirements.txt           # Python-Dependencies
+├── Dockerfile                 # Container-Bauplan
+├── docker-compose.yml         # Orchestrierung
 ├── database/
-│   ├── schema.sql             # SQLite-Schema (BetrKV, etc.)
-│   └── app.db                 # Datenbank (persistent via Volume)
+│   ├── schema.sql             # SQLite-Schema
+│   └── __init__.py            # DB-Hilfsfunktionen
 ├── services/
-│   ├── ollama_service.py      # Ollama/Qwen API-Client
-│   ├── ocr_service.py         # Tesseract OCR
-│   └── pdf_service.py         # PDF-Generierung (WeasyPrint)
-├── templates/                 # Jinja2 + HTMX Templates
-│   ├── base.html
-│   ├── login.html / register.html
-│   ├── dashboard.html
-│   ├── properties/
-│   ├── tenants/
-│   ├── invoices/
-│   ├── abrechnung/
-│   └── assistant/
-├── static/css/style.css       # Stylesheet
-└── uploads/                   # Hochgeladene Dokumente
+│   ├── ollama_service.py      # LLM-Client
+│   ├── ocr_service.py         # Tesseract-OCR
+│   └── pdf_service.py         # PDF-Generierung
+├── prompts/
+│   └── betrkv_legal.json      # Rechtliche Prompt-Vorlagen
+├── templates/
+│   ├── base.html              # Basis-Layout
+│   ├── dashboard.html         # Dashboard
+│   ├── login/register.html    # Auth
+│   ├── properties/            # Objektverwaltung
+│   ├── tenants/               # Mieterverwaltung
+│   ├── invoices/              # Rechnungen
+│   └── abrechnung/            # Prüfung & Erstellung
+├── static/css/
+│   └── style.css              # Stylesheet
+└── uploads/                   # Dokumente
 ```
 
-## Umgebungsvariablen
+## ⚙️ Umgebungsvariablen
 
 | Variable | Standard | Beschreibung |
 |----------|----------|--------------|
-| `OLLAMA_MODEL` | `qwen2.5:14b` | Verwendetes LLM |
-| `OLLAMA_HOST` | `host.docker.internal` | Ollama-Host |
+| `OLLAMA_MODEL` | `qwen2.5:14b` | LLM-Modell |
+| `OLLAMA_HOST` | `host.docker.internal` | Ollama-Server |
 | `OLLAMA_PORT` | `11434` | Ollama-Port |
 | `DATABASE_PATH` | `database/app.db` | SQLite-Pfad |
-| `FLASK_SECRET_KEY` | - | Session-Schlüssel |
+| `FLASK_SECRET_KEY` | auto | Session-Schlüssel |
 
-## Troubleshooting
+## 📊 Exportformate
+
+| Format | Beschreibung |
+|--------|--------------|
+| 📄 PDF | Prüfbericht (WeasyPrint) |
+| 📝 Markdown (.md) | Strukturierter Export |
+| 📄 PDF-Abrechnung | Vollständige NK-Abrechnung |
+
+## 🔧 Troubleshooting
 
 ### Ollama nicht erreichbar
 ```bash
-# Prüfen ob Ollama läuft
 curl http://localhost:11434/api/tags
-
-# Falls nicht: Ollama neu starten
 ollama serve
 ```
 
-### Modell wechseln
+### App startet nicht
 ```bash
-# In .env oder docker-compose.yml:
-OLLAMA_MODEL=qwen2.5:14b
-# oder
-OLLAMA_MODEL=mistral:7b
-# oder
-OLLAMA_MODEL=llama3.1:8b
+docker-compose logs -f
+docker-compose down && docker-compose up --build
 ```
 
-### Container neu bauen
+### DB zurücksetzen
 ```bash
 docker-compose down
-docker-compose up --build
-```
-
-### Datenbank zurücksetzen
-```bash
-docker-compose down
-rm database/app.db
+rm -f database/app.db
 docker-compose up
 ```
 
-## Technologie-Stack
+### Modell wechseln
+```yaml
+environment:
+  - OLLAMA_MODEL=llama3.1:8b   # schneller
+  # - OLLAMA_MODEL=qwen2.5:14b  # genauer (Default)
+```
 
-- **Backend**: Flask 3.x (Python 3.12)
-- **Frontend**: HTMX + Jinja2 Templates
-- **Datenbank**: SQLite
-- **KI/OCR**: Ollama + Qwen 2.5 14B + Tesseract
-- **PDF**: WeasyPrint
-- **Container**: Docker + Docker Compose
+## 🧪 Tech-Stack
 
-## Lizenz
+| Kategorie | Technologie |
+|-----------|-------------|
+| Backend | Python 3.12 + Flask 3.x |
+| Frontend | HTMX + Jinja2 |
+| Datenbank | SQLite |
+| KI lokal | Ollama + Qwen 2.5 14B |
+| OCR | Tesseract 5 + Deutsch |
+| PDF | WeasyPrint |
+| Container | Docker + Docker Compose |
 
-Privates Projekt. Für lokale, nicht-kommerzielle Nutzung.
+## 📜 Lizenz
+
+Privates Projekt – lokale, nicht-kommerzielle Nutzung.
+
+---
+
+<p align="center">
+  <sub>Mit ❤️ und 🤖 gemacht – läuft komplett lokal auf Ihrem MacBook.</sub><br>
+  <sub>Keine Cloud, keine Datenweitergabe, keine versteckten Kosten.</sub>
+</p>
