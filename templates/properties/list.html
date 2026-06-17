@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Objekte - NebenkostenAbrechnung{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Meine Objekte</h1>
+    <a href="{{ url_for('property_new') }}" class="btn btn-primary">+ Neues Objekt</a>
+</div>
+
+{% if properties %}
+<div class="property-grid">
+    {% for prop in properties %}
+    <div class="property-card">
+        <div class="property-header">
+            <h3>{{ prop.name or 'Unbenannt' }}</h3>
+            <span class="badge badge-secondary">{{ prop.total_sqm }} qm</span>
+        </div>
+        <p class="property-address">{{ prop.address }}</p>
+        <div class="property-meta">
+            <span>{{ prop.units }} Einheit(en)</span>
+            <span>Baujahr: {{ prop.construction_year or 'unbekannt' }}</span>
+        </div>
+        <div class="property-actions">
+            <a href="{{ url_for('property_detail', pid=prop.id) }}" class="btn btn-sm btn-outline">Details</a>
+            <span class="stats-inline" hx-get="{{ url_for('property_stats', pid=prop.id) }}" hx-trigger="load"></span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">🏠</div>
+    <h3>Noch keine Objekte</h3>
+    <p>Legen Sie Ihr erstes Wohnobjekt an, um mit der Abrechnung zu starten.</p>
+    <a href="{{ url_for('property_new') }}" class="btn btn-primary">Objekt anlegen</a>
+</div>
+{% endif %}
+{% endblock %}

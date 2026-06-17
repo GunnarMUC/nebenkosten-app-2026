@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Abrechnung prüfen - NebenkostenAbrechnung{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Nebenkostenabrechnung prüfen</h1>
+</div>
+
+<div class="card">
+    <h2>Abrechnung einreichen</h2>
+    <p class="text-muted">Laden Sie Ihre Nebenkostenabrechnung hoch oder fügen Sie den Text ein. Sie können <strong>mehrere Dateien</strong> gleichzeitig hochladen (z.B. aktuelle Abrechnung + Vorjahresabrechnung zum Vergleich). Die KI prüft anhand von 11 Standards nach BetrKV und BGB.</p>
+    
+    <form method="POST" enctype="multipart/form-data" class="form" id="pruef-form">
+        
+        <!-- Multi-File Upload -->
+        <div class="form-group">
+            <label for="abrechnung_files">Dateien hochladen (PDF oder Bild)</label>
+            <input type="file" id="abrechnung_files" name="abrechnung_files" class="form-control"
+                   accept=".pdf,.jpg,.jpeg,.png,.tiff,.webp" multiple
+                   onchange="showFileList(this)">
+            <small class="text-muted">
+                Mehrere Dateien möglich (max. 20 MB je Datei). OCR-Extraktion erfolgt automatisch.
+            </small>
+            <div id="file-list" class="file-list mt-2"></div>
+        </div>
+        
+        <div class="form-group">
+            <label for="abrechnung_text">oder: Abrechnungstext einfügen / ergänzen</label>
+            <textarea id="abrechnung_text" name="abrechnung_text" class="form-control" rows="8"
+                      placeholder="Fügen Sie hier den Text Ihrer Nebenkostenabrechnung ein. Falls die OCR nicht alle Daten erkannt hat, können Sie den Text hier ergänzen oder korrigieren...">{{ request.form.get('abrechnung_text', '') }}</textarea>
+            <small class="text-muted">
+                Tipp: Falls der Upload nicht funktioniert, kopieren Sie den Text direkt aus der PDF hier rein.
+            </small>
+        </div>
+        
+        <h3 class="mt-4">Kontext (optional)</h3>
+        <div class="form-row">
+            <div class="form-group form-col">
+                <label for="wohnflaeche">Ihre Wohnfläche (qm)</label>
+                <input type="number" id="wohnflaeche" name="wohnflaeche" class="form-control" step="0.01"
+                       value="{{ request.form.get('wohnflaeche', '') }}">
+            </div>
+            <div class="form-group form-col">
+                <label for="personen">Personen im Haushalt</label>
+                <input type="number" id="personen" name="personen" class="form-control" min="1"
+                       value="{{ request.form.get('personen', '') }}">
+            </div>
+            <div class="form-group form-col">
+                <label for="vorauszahlung">Ihre Vorauszahlung (€/Monat)</label>
+                <input type="number" id="vorauszahlung" name="vorauszahlung" class="form-control" step="0.01"
+                       value="{{ request.form.get('vorauszahlung', '') }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="mietvertrag_keys">Vereinbarte Verteilerschlüssel</label>
+            <input type="text" id="mietvertrag_keys" name="mietvertrag_keys" class="form-control"
+                   placeholder="z.B. Heizung: 50% Verbrauch / 50% Fläche"
+                   value="{{ request.form.get('mietvertrag_keys', '') }}">
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-lg" id="submit-btn">
+            🔍 Prüfung starten
+        </button>
+        <div id="upload-spinner" class="htmx-indicator mt-2">
+            <span class="loading">⏳ Dateien werden verarbeitet... Dies kann bei PDFs einige Sekunden dauern.</span>
+        </div>
+    </form>
+</div>
+
+<div class="card mt-4">
+    <h3>Geprüfte Kriterien</h3>
+    <div class="check-list">
+        <div class="check-item"><span class="check-icon">1</span> Abrechnungszeitraum max. 12 Monate (§556 Abs. 3 BGB)</div>
+        <div class="check-item"><span class="check-icon">2</span> Kostenarten umlagefähig nach BetrKV (§2 BetrKV)</div>
+        <div class="check-item"><span class="check-icon">3</span> Verteilerschlüssel im Mietvertrag vereinbart (§556a BGB)</div>
+        <div class="check-item"><span class="check-icon">4</span> Heizkosten nach HeizkostenV (30-70% Verbrauch)</div>
+        <div class="check-item"><span class="check-icon">5</span> KEINE Instandhaltungs-/Reparaturkosten (§1 Abs. 2 BetrKV)</div>
+        <div class="check-item"><span class="check-icon">6</span> Kabelanschluss seit 01.07.2024 (TKG §58)</div>
+        <div class="check-item"><span class="check-icon">7</span> CO2-Kosten nach Stufenmodell (CO2KostAufG)</div>
+        <div class="check-item"><span class="check-icon">8</span> Grundsteuer GrStReform 2025</div>
+        <div class="check-item"><span class="check-icon">9</span> Transparenzangaben (Vorauszahlungen, Ergebnis)</div>
+        <div class="check-item"><span class="check-icon">10</span> Abrechnungsfrist (§556 Abs. 3 BGB)</div>
+        <div class="check-item"><span class="check-icon">11</span> Leerstandskosten (§2 Abs. 2 BetrKV)</div>
+    </div>
+    <p class="text-muted mt-2"><small>Die Prüfung ersetzt keine Rechtsberatung. Bei Fehlern konsultieren Sie einen Mieterverein.</small></p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showFileList(input) {
+    const listDiv = document.getElementById('file-list');
+    if (input.files.length === 0) {
+        listDiv.innerHTML = '';
+        return;
+    }
+    
+    let html = '<div class="file-list-header">Ausgewählte Dateien:</div>';
+    for (let i = 0; i < input.files.length; i++) {
+        const file = input.files[i];
+        const size = (file.size / 1024 / 1024).toFixed(2);
+        html += '<div class="file-item">📄 ' + file.name + ' <span class="file-size">(' + size + ' MB)</span></div>';
+    }
+    listDiv.innerHTML = html;
+}
+
+// Show spinner on submit
+document.getElementById('pruef-form').addEventListener('submit', function() {
+    const btn = document.getElementById('submit-btn');
+    const spinner = document.getElementById('upload-spinner');
+    btn.disabled = true;
+    btn.textContent = '⏳ Verarbeitung läuft...';
+    spinner.style.display = 'block';
+});
+</script>
+{% endblock %}

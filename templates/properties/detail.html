@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}{{ property.name or property.address }} - NebenkostenAbrechnung{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ property.name or 'Wohnobjekt' }}</h1>
+    <div>
+        <a href="{{ url_for('properties_list') }}" class="btn btn-sm btn-ghost">← Zurück</a>
+    </div>
+</div>
+
+<p class="text-muted">{{ property.address }} | {{ property.total_sqm }} qm | {{ property.units }} Einheit(en)</p>
+
+<div class="tabs">
+    <div class="tab-content">
+        <!-- Tenants Section -->
+        <h2>Mieter</h2>
+        <a href="{{ url_for('tenant_new', pid=property.id) }}" class="btn btn-sm btn-primary mb-3">+ Mieter hinzufügen</a>
+        
+        {% if tenants %}
+        <table class="data-table">
+            <thead>
+                <tr><th>Name</th><th>Email</th><th>Einzug</th><th>qm</th><th>Personen</th><th>Vorauszahlung</th></tr>
+            </thead>
+            <tbody>
+                {% for t in tenants %}
+                <tr>
+                    <td>{{ t.name }}</td>
+                    <td>{{ t.email or '-' }}</td>
+                    <td>{{ t.move_in_date }}</td>
+                    <td>{{ t.sqm }}</td>
+                    <td>{{ t.persons }}</td>
+                    <td>{{ "%.2f"|format(t.vorauszahlung) }} €</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted">Noch keine Mieter eingetragen.</p>
+        {% endif %}
+
+        <!-- Invoices Section -->
+        <h2 class="mt-4">Rechnungen / Belege</h2>
+        <a href="{{ url_for('invoice_new', pid=property.id) }}" class="btn btn-sm btn-primary mb-3">+ Rechnung hinzufügen</a>
+        
+        {% if invoices %}
+        <table class="data-table">
+            <thead>
+                <tr><th>Datum</th><th>Kostenart</th><th>Anbieter</th><th>Beschreibung</th><th>Betrag</th><th>Aktion</th></tr>
+            </thead>
+            <tbody>
+                {% for inv in invoices %}
+                <tr>
+                    <td>{{ inv.date }}</td>
+                    <td><span class="tag tag-sm">{{ inv.betrkv_name or inv.category }}</span></td>
+                    <td>{{ inv.vendor or '-' }}</td>
+                    <td>{{ inv.description or '-' }}</td>
+                    <td class="text-right">{{ "%.2f"|format(inv.amount) }} €</td>
+                    <td>
+                        {% if inv.document_path %}
+                        <button class="btn btn-xs btn-ghost"
+                                hx-post="{{ url_for('invoice_analyze', iid=inv.id) }}"
+                                hx-target="#analysis-{{ inv.id }}"
+                                hx-indicator="#spinner-{{ inv.id }}">
+                            🔍 KI-Analyse
+                        </button>
+                        <span id="spinner-{{ inv.id }}" class="htmx-indicator">⏳</span>
+                        <div id="analysis-{{ inv.id }}" class="mt-1"></div>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted">Noch keine Rechnungen eingetragen.</p>
+        {% endif %}
+
+        <!-- Abrechnungen Section -->
+        <h2 class="mt-4">Abrechnungen</h2>
+        {% if abrechnungen %}
+        <table class="data-table">
+            <thead>
+                <tr><th>Jahr</th><th>Status</th><th>Erstellt</th><th>Aktion</th></tr>
+            </thead>
+            <tbody>
+                {% for ab in abrechnungen %}
+                <tr>
+                    <td>{{ ab.year }}</td>
+                    <td><span class="badge badge-{{ 'success' if ab.status == 'fertig' else 'warning' }}">{{ ab.status }}</span></td>
+                    <td>{{ ab.created_at }}</td>
+                    <td>
+                        <a href="{{ url_for('abrechnung_detail', ab_id=ab.id) }}" class="btn btn-xs btn-outline">Details</a>
+                        {% if ab.pdf_path %}
+                        <a href="{{ url_for('abrechnung_download', ab_id=ab.id) }}" class="btn btn-xs btn-primary">PDF</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted">Noch keine Abrechnungen erstellt.</p>
+        {% endif %}
+    </div>
+</div>
+
+<form method="POST" action="{{ url_for('property_delete', pid=property.id) }}" class="mt-4" 
+      onsubmit="return confirm('Objekt wirklich löschen?');">
+    <button type="submit" class="btn btn-sm btn-danger">Objekt löschen</button>
+</form>
+{% endblock %}

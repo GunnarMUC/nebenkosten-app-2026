@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Abrechnung {{ abrechnung.year }} - NebenkostenAbrechnung{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Betriebskostenabrechnung {{ abrechnung.year }}</h1>
+    <div>
+        {% if abrechnung.pdf_path %}
+        <a href="{{ url_for('abrechnung_download', ab_id=abrechnung.id) }}" class="btn btn-primary">📥 PDF herunterladen</a>
+        {% endif %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-ghost">Dashboard</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="abrechnung-meta">
+        <p><strong>Objekt:</strong> {{ abrechnung.property_name }}<br>
+        <strong>Adresse:</strong> {{ abrechnung.address }}<br>
+        <strong>Status:</strong> <span class="badge badge-success">{{ abrechnung.status }}</span><br>
+        <strong>Erstellt:</strong> {{ abrechnung.created_at }}</p>
+    </div>
+</div>
+
+<h2>Kostenaufteilung</h2>
+{% if allocations %}
+<table class="data-table">
+    <thead>
+        <tr><th>Mieter</th><th>Kategorie</th><th>Anbieter</th><th>Gesamtrechnung</th><th>Anteil</th><th>Schlüssel</th></tr>
+    </thead>
+    <tbody>
+        {% for al in allocations %}
+        <tr>
+            <td>{{ al.tenant_name }}</td>
+            <td>{{ al.category }}</td>
+            <td>{{ al.vendor or '-' }}</td>
+            <td class="text-right">{{ "%.2f"|format(al.invoice_amount) }} €</td>
+            <td class="text-right"><strong>{{ "%.2f"|format(al.amount) }} €</strong></td>
+            <td><span class="tag tag-sm">{{ al.allocation_key }}</span></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="card mt-4">
+    <h3>Zusammenfassung pro Mieter</h3>
+    {% set ns = namespace(last_tenant='') %}
+    {% set tenant_totals = {} %}
+    {% for al in allocations %}
+        {% if al.tenant_name not in tenant_totals %}
+            {% set _ = tenant_totals.update({al.tenant_name: 0}) %}
+        {% endif %}
+        {% set _ = tenant_totals.update({al.tenant_name: tenant_totals[al.tenant_name] + al.amount}) %}
+    {% endfor %}
+    
+    <table class="data-table">
+        <thead><tr><th>Mieter</th><th class="text-right">Gesamtanteil</th></tr></thead>
+        <tbody>
+            {% for name, total in tenant_totals.items() %}
+            <tr>
+                <td>{{ name }}</td>
+                <td class="text-right"><strong>{{ "%.2f"|format(total) }} €</strong></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="text-muted">Keine Kostenaufteilung vorhanden.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Database
+database/app.db
+database/*.sqlite
+
+# Uploads (nur .gitkeep behalten)
+uploads/*.pdf
+uploads/*.png
+uploads/*.jpg
+uploads/*.jpeg
+uploads/*.tiff
+uploads/*.webp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Docker
+.env
+
+# Temp
+*.swp
+*.swo

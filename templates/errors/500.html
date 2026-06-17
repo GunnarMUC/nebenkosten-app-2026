@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Serverfehler - NebenkostenAbrechnung{% endblock %}
+
+{% block content %}
+<div class="empty-state">
+    <div class="empty-icon" style="font-size: 64px;">⚠️</div>
+    <h1>Interner Serverfehler</h1>
+    <p>Es ist ein technischer Fehler aufgetreten. Bitte versuchen Sie es erneut.</p>
+    <p class="text-muted">Tipp: Bei großen PDF-Dateien kann die Verarbeitung einige Zeit dauern. Versuchen Sie, den Text direkt einzufügen.</p>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Zum Dashboard</a>
+    <a href="{{ url_for('abrechnung_pruefen') }}" class="btn btn-outline">Zurück zur Prüfung</a>
+</div>
+{% endblock %}

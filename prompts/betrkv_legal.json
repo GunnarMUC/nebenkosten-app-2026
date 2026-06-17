@@ -1,0 +1,248 @@
+{
+  "version": "2025-06",
+  "description": "Aktuelles Rechtswissen fuer Betriebskostenabrechnungen in Deutschland - Stand Juni 2026",
+  "sources": [
+    "BetrKV (Betriebskostenverordnung) §2",
+    "BGB §556, §556a, §556b",
+    "Heizkostenverordnung (HKVO) 2024",
+    "CO2-Kostenaufteilungsgesetz (CO2KostAufG)",
+    "Telekommunikationsgesetz (TKG) - Kabelanschluss",
+    "Grundsteuerreform 2025"
+  ],
+  "betrkv_kostenarten": {
+    "1": {
+      "name": "Grundsteuer",
+      "legal_basis": "§2 Nr.1 BetrKV",
+      "umlagefaehig": true,
+      "verteilerschluessel": ["qm", "einheit"],
+      "hinweis": "Grundsteuerreform 2025: Neue Hebesaetze seit 01.01.2025. Umlage nur wenn im Mietvertrag vereinbart. Nachforderung nur innerhalb 3 Monate nach Bekanntgabe der neuen Grundsteuer."
+    },
+    "2": {
+      "name": "Versicherungen",
+      "legal_basis": "§2 Nr.13 BetrKV",
+      "umlagefaehig": true,
+      "verteilerschluessel": ["qm"],
+      "hinweis": "Umlagefaehig: Gebaeude-Haftpflicht, Feuer, Sturm, Glas. NICHT umlagefaehig: Rechtsschutzversicherung des Vermieters, Mietkautionsversicherung."
+    },
+    "3": {
+      "name": "Heizung",
+      "legal_basis": "§2 Nr.4 BetrKV, HKVO",
+      "umlagefaehig": true,
+      "verteilerschluessel": ["verbrauch_50_qm_50"],
+      "hinweis": "HKVO vorausgesetzt. Mindestens 30% Verbrauchsanteil, maximal 70%. CO2-Kosten nur anteilig nach Stufenmodell."
+    },
+    "4": {
+      "name": "Warmwasser",
+      "legal_basis": "§2 Nr.5 BetrKV, HKVO",
+      "umlagefaehig": true,
+      "verteilerschluessel": ["verbrauch_50_qm_50"],
+      "hinweis": "Analog Heizkosten nach HKVO verteilen."
+    },
+    "5": {
+      "name": "Wasserversorgung",
+      "legal_basis": "§2 Nr.2 BetrKV",
+      "umlagefaehig": true,
+      "verteilerschluessel": ["person", "verbrauch"],
+      "hinweis": "Kaltwasser + Grundgebuehren."
+    },
+    "6": {
+      "name": "Entwaesserung",
+      "legal_basis": "§2 Nr.3 BetrKV",
+      "umlagefaehig": true,
+      "verteilerschluessel": ["qm", "verbrauch"],
+      "hinweis": "Schmutzwasser + Niederschlagswasser (nur bei separatem Zaehler)."
+    },
+    "7": {
+      "name": "Gartenpflege",
+      "legal_basis": "§2 Nr.10 BetrKV",
+      "umlagefaehig": true,
+      "verteilerschluessel": ["qm"],
+      "hinweis": "Nur oeffentlich zugaengliche Flaechen. Privatgarten des Vermieters ist nicht umlagefaehig."
+    },
+    "8": {
+      "name": "Beleuchtung / Strassenreinigung",
+      "legal_basis": "§2 Nr.8, Nr.11 BetrKV",
+      "umlagefaehig": true,
+      "verteilerschluessel": ["einheit"],
+      "hinweis": "Strom fuer Gemeinschaftsflaechen + oeffentliche Strassenreinigung."
+    },
+    "9": {
+      "name": "Aufzug",
+      "legal_basis": "§2 Nr.7 BetrKV",
+      "umlagefaehig": true,
+      "verteilerschluessel": ["einheit"],
+      "hinweis": "Betrieb, Wartung, Pruefung. Erdgeschosswohnung ohne Aufzugsnutzung: Anpassung oder Herausrechnung pruefen."
+    },
+    "10": {
+      "name": "Muellbeseitigung",
+      "legal_basis": "§2 Nr.8 BetrKV",
+      "umlagefaehig": true,
+      "verteilerschluessel": ["einheit", "person"],
+      "hinweis": "Muellabfuhrgebuehren, Container-Miete, Entsorgung Sperrmuell."
+    },
+    "11": {
+      "name": "Gebaeudereinigung",
+      "legal_basis": "§2 Nr.9 BetrKV",
+      "umlagefaehig": true,
+      "verteilerschluessel": ["qm", "nutzflaeche"],
+      "hinweis": "Treppenhaus, Keller, Waschkueche. NUR Gemeinschaftsflaechen."
+    },
+    "12": {
+      "name": "Schornsteinfeger",
+      "legal_basis": "§2 Nr.12 BetrKV",
+      "umlagefaehig": true,
+      "verteilerschluessel": ["einheit"],
+      "hinweis": "Kehrung + Pruefung nach Feuerungsverordnung."
+    },
+    "13": {
+      "name": "Sachverstaendige / Wartung",
+      "legal_basis": "§2 Nr.14 BetrKV",
+      "umlagefaehig": true,
+      "verteilerschluessel": ["qm"],
+      "hinweis": "Nur laufende Wartung, keine Instandsetzung/Instandhaltung."
+    },
+    "14": {
+      "name": "Kabelanschluss / TV",
+      "legal_basis": "§2 Nr.15 BetrKV (alt)",
+      "umlagefaehig": false,
+      "verteilerschluessel": [],
+      "hinweis": "SEIT 01.07.2024 NICHT MEHR UMLAGEFAEHIG (TKG-Novelle). Ausnahme: Mieter hat vor dem 30.06.2024 schriftlich zugestimmt, dass Kabelanschluss als Betriebskosten umlagefaehig ist."
+    },
+    "15": {
+      "name": "Rauchmelder",
+      "legal_basis": "§2 BetrKV (sonstige)",
+      "umlagefaehig": true,
+      "verteilerschluessel": ["einheit"],
+      "hinweis": "Wartung und Pruefung. Kaufpreis nicht umlagefaehig (Anschaffung = Instandhaltung)."
+    },
+    "16": {
+      "name": "Energie Gemeinschaftsflaechen",
+      "legal_basis": "§2 Nr.11 BetrKV",
+      "umlagefaehig": true,
+      "verteilerschluessel": ["qm"],
+      "hinweis": "Strom fuer Flur, Trockenraum, Fahrradkeller etc."
+    },
+    "17": {
+      "name": "Internet / Breitband",
+      "legal_basis": "§2 Nr.15 BetrKV (neu)",
+      "umlagefaehig": "bedingt",
+      "verteilerschluessel": ["qm"],
+      "hinweis": "Nur wenn im Mietvertrag konkret als umlagefaehige Betriebskosten benannt. Muss Bestandteil der Betriebskostenvereinbarung sein."
+    }
+  },
+  "fristen": {
+    "abrechnungsfrist": {
+      "description": "§556 Abs. 3 BGB: Vermieter muss innerhalb 12 Monaten nach Ende des Abrechnungszeitraums abrechnen",
+      "beispiele": {
+        "2024": "Abrechnung muss bis 31.12.2025 beim Mieter eingegangen sein",
+        "2025": "Abrechnung muss bis 31.12.2026 beim Mieter eingegangen sein",
+        "2026": "Abrechnung muss bis 31.12.2027 beim Mieter eingegangen sein"
+      },
+      "folge_verspaetung": "Nachforderungsanspruch entfaellt bei Verspaetung (relativierte Rechtsprechung, Einzelfallpruefung)"
+    },
+    "einwendungsfrist": {
+      "description": "Mieter kann 12 Monate nach Zugang der Abrechnung Einwendungen erheben",
+      "hinweis": "Formlos moeglich, sollte aber schriftlich erfolgen"
+    }
+  },
+  "co2_kosten": {
+    "description": "CO2-Kostenaufteilungsgesetz (CO2KostAufG) - Seit 2023",
+    "preise_pro_tonne": {
+      "2023": 30,
+      "2024": 45,
+      "2025": 55,
+      "2026": 65
+    },
+    "stufenmodell": [
+      {"stufe": 1, "co2_von_kg": 0, "co2_bis_kg": 12, "mieter_anteil": 100, "vermieter_anteil": 0},
+      {"stufe": 2, "co2_von_kg": 12, "co2_bis_kg": 17, "mieter_anteil": 90, "vermieter_anteil": 10},
+      {"stufe": 3, "co2_von_kg": 17, "co2_bis_kg": 22, "mieter_anteil": 80, "vermieter_anteil": 20},
+      {"stufe": 4, "co2_von_kg": 22, "co2_bis_kg": 27, "mieter_anteil": 70, "vermieter_anteil": 30},
+      {"stufe": 5, "co2_von_kg": 27, "co2_bis_kg": 32, "mieter_anteil": 60, "vermieter_anteil": 40},
+      {"stufe": 6, "co2_von_kg": 32, "co2_bis_kg": 37, "mieter_anteil": 50, "vermieter_anteil": 50},
+      {"stufe": 7, "co2_von_kg": 37, "co2_bis_kg": 42, "mieter_anteil": 40, "vermieter_anteil": 60},
+      {"stufe": 8, "co2_von_kg": 42, "co2_bis_kg": 47, "mieter_anteil": 30, "vermieter_anteil": 70},
+      {"stufe": 9, "co2_von_kg": 47, "co2_bis_kg": 52, "mieter_anteil": 20, "vermieter_anteil": 80},
+      {"stufe": 10, "co2_von_kg": 52, "co2_bis_kg": 999, "mieter_anteil": 5, "vermieter_anteil": 95}
+    ]
+  },
+  "nicht_umlagefaehige_kosten": [
+    {
+      "kategorie": "Instandhaltung / Instandsetzung / Reparaturen",
+      "legal_basis": "§1 Abs. 2 BetrKV",
+      "hinweis": "Wartung ist umlagefaehig (laufend), Instandhaltung/Reparatur NICHT."
+    },
+    {
+      "kategorie": "Modernisierung / Sanierung",
+      "legal_basis": "§1 Abs. 2 BetrKV",
+      "hinweis": "Umlage nur ueber Modernisierungsumlage (§559 BGB), nicht ueber Betriebskosten."
+    },
+    {
+      "kategorie": "Verwaltungskosten",
+      "legal_basis": "Nicht in BetrKV",
+      "hinweis": "Kosten fuer Hausverwalter sind NICHT umlagefaehig. Wenn in Abrechnung enthalten: Anfechtbar."
+    },
+    {
+      "kategorie": "Kabelanschluss (seit 01.07.2024)",
+      "legal_basis": "TKG §58",
+      "hinweis": "Seit 01.07.2024 durch TKG-Novelle nicht mehr umlagefaehig. Ausnahme: Schriftliche Zustimmung vor 30.06.2024."
+    },
+    {
+      "kategorie": "Leerstandskosten",
+      "legal_basis": "§2 Abs. 2 BetrKV",
+      "hinweis": "Kosten fuer leerstehende Wohnungen duerfen NICHT auf Mieter umgelegt werden."
+    },
+    {
+      "kategorie": "Finanzierungskosten / Kreditzinsen",
+      "legal_basis": "Nicht in BetrKV",
+      "hinweis": "Zinsen fuer Darlehen sind NICHT umlagefaehig."
+    },
+    {
+      "kategorie": "Rechtsanwaltskosten des Vermieters",
+      "legal_basis": "Nicht in BetrKV",
+      "hinweis": "Prozesskosten, Rechtsanwaltskosten des Vermieters sind NICHT umlagefaehig."
+    },
+    {
+      "kategorie": "Steuerberaterkosten des Vermieters",
+      "legal_basis": "Nicht in BetrKV",
+      "hinweis": "Kosten fuer eigene Steuererklärung des Vermieters nicht umlagefaehig."
+    }
+  ],
+  "heizkostenv": {
+    "aufteilung": {
+      "verbrauchsanteil_min": 30,
+      "verbrauchsanteil_max": 70,
+      "flaechenanteil_rest": "Rest",
+      "standard": "50% Verbrauch / 50% Flaeche"
+    },
+    "neuerungen_2024": [
+      "Monatliche Verbrauchsinformationen sind Pflicht (digital, kostenlos)",
+      "Neue Zaehler muessen fernablesbar sein (ab 01.2024)",
+      "Bestandszaehler muessen bis Ende 2026 nachgeruestet sein",
+      "Datenschutz und Interoperabilität der Systeme"
+    ]
+  },
+  "grundsteuerreform_2025": {
+    "beschreibung": "Neubewertung aller Grundstuecke ab 01.01.2025",
+    "wichtig_fuer_mieter": [
+      "Neue Hebesaetze der Kommunen gelten ab 2025",
+      "Einige Bescheide steigen deutlich (teilweise um das 10-fache)",
+      "Umlage auf Mieter nur wenn im Mietvertrag vereinbart",
+      "Nachforderung nur innerhalb 3 Monate nach Bekanntgabe",
+      "Mietern erst bei NK-Abrechnung 2025 (Zustellung Ende 2026) sichtbar"
+    ]
+  },
+  "transparenzangaben": {
+    "description": "Was eine korrekte Abrechnung enthalten muss",
+    "pflichtangaben": [
+      "Vollstaendige Anschrift der Wohnung",
+      "Abrechnungszeitraum (max. 12 Monate)",
+      "Gesamtkosten je Kostenart mit Einzelbelegen",
+      "Verteilerschluessel mit Berechnungsgrundlage",
+      "Vergleichswerte zum Vorjahr (bei Heizkosten)",
+      "CO2-Ausstoss und Energietraeger (bei Heizkosten)",
+      "Vorauszahlungen des Mieters",
+      "Ergebnis: Nachzahlung oder Guthaben"
+    ]
+  }
+}

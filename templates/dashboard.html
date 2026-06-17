@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - NebenkostenAbrechnung{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Dashboard</h1>
+    <p>Willkommen, {{ current_user.display_name or current_user.username }}!</p>
+</div>
+
+<div class="dashboard-grid">
+    <!-- Ollama Status Card -->
+    <div class="card card-status">
+        <h3>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+            KI-Status (Ollama)
+        </h3>
+        <div id="ollama-card-status" hx-get="{{ url_for('ollama_status') }}" hx-trigger="load">
+            <span class="loading">Prüfe Verbindung...</span>
+        </div>
+        
+        <!-- LLM Model Selection -->
+        <div class="mt-3" id="model-selector">
+            <label for="ollama-model" class="form-label" style="font-size:0.8rem;font-weight:600;color:var(--text-muted)">
+                Aktives LLM-Modell:
+            </label>
+            <div class="model-select-row">
+                <select id="ollama-model" name="model" class="form-control form-control-sm">
+                    {% if ollama_models %}
+                        {% for model in ollama_models %}
+                        <option value="{{ model }}" {% if model == selected_model %}selected{% endif %}>
+                            {{ model }}
+                        </option>
+                        {% endfor %}
+                    {% else %}
+                        <option value="{{ selected_model }}" selected>{{ selected_model }}</option>
+                    {% endif %}
+                </select>
+                <button class="btn btn-sm btn-primary" 
+                        hx-post="{{ url_for('switch_model') }}" 
+                        hx-include="#ollama-model"
+                        hx-target="#model-switch-result"
+                        hx-indicator="#model-spinner">
+                    Wechseln
+                </button>
+            </div>
+            <div id="model-spinner" class="htmx-indicator" style="margin-top:0.5rem">
+                <span class="loading text-small">Modell wird gewechselt...</span>
+            </div>
+            <div id="model-switch-result" class="mt-1" style="font-size:0.8rem"></div>
+            <small class="text-muted" style="font-size:0.75rem;display:block;margin-top:0.5rem">
+                Tipp: Für schwächere Systeme verwenden Sie kleinere Modelle wie <code>qwen2.5:7b</code> oder <code>mistral:7b</code>.<br>
+                Laden Sie diese vorher mit: <code>ollama pull qwen2.5:7b</code>
+            </small>
+        </div>
+    </div>
+
+    {% if current_user.role in ('vermieter', 'admin') %}
+    <!-- Stats Cards -->
+    <div class="card card-stat">
+        <div class="stat-icon">🏠</div>
+        <div class="stat-number">{{ stats.properties or 0 }}</div>
+        <div class="stat-label">Objekte</div>
+        <a href="{{ url_for('properties_list') }}" class="btn btn-sm btn-outline mt-2">Verwalten</a>
+    </div>
+
+    <div class="card card-stat">
+        <div class="stat-icon">👥</div>
+        <div class="stat-number">{{ stats.tenants or 0 }}</div>
+        <div class="stat-label">Mieter</div>
+    </div>
+
+    <div class="card card-stat">
+        <div class="stat-icon">📄</div>
+        <div class="stat-number">{{ stats.abrechnungen or 0 }}</div>
+        <div class="stat-label">Abrechnungen</div>
+        <a href="{{ url_for('abrechnung_erstellen') }}" class="btn btn-sm btn-primary mt-2">Neu erstellen</a>
+    </div>
+    {% endif %}
+
+    <!-- Quick Actions -->
+    <div class="card card-wide">
+        <h3>Schnellzugriff</h3>
+        <div class="quick-actions">
+            {% if current_user.role in ('vermieter', 'admin') %}
+            <a href="{{ url_for('property_new') }}" class="action-btn">
+                <span class="action-icon">+</span>
+                <span>Objekt anlegen</span>
+            </a>
+            <a href="{{ url_for('abrechnung_erstellen') }}" class="action-btn">
+                <span class="action-icon">📊</span>
+                <span>Abrechnung erstellen</span>
+            </a>
+            {% endif %}
+            <a href="{{ url_for('abrechnung_pruefen') }}" class="action-btn">
+                <span class="action-icon">🔍</span>
+                <span>Abrechnung prüfen</span>
+            </a>
+            <a href="{{ url_for('assistant') }}" class="action-btn">
+                <span class="action-icon">🤖</span>
+                <span>KI-Assistent</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Info Card -->
+    <div class="card card-wide">
+        <h3>Über diese Software</h3>
+        <p class="text-muted">
+            Diese Software läuft vollständig lokal auf Ihrem MacBook. Alle Daten verbleiben auf Ihrem Gerät.
+            Die KI-Funktionen nutzen <strong>Qwen 2.5 14B</strong> über Ollama – ohne Cloud-Anbindung.
+        </p>
+        <div class="tech-stack-tags">
+            <span class="tag">Flask</span>
+            <span class="tag">HTMX</span>
+            <span class="tag">SQLite</span>
+            <span class="tag">Ollama</span>
+            <span class="tag">Qwen 14B</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

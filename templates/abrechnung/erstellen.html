@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Abrechnung erstellen - NebenkostenAbrechnung{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Betriebskostenabrechnung erstellen</h1>
+</div>
+
+{% if properties %}
+<div class="card">
+    <form method="POST" class="form">
+        <div class="form-group">
+            <label for="property_id">Wohnobjekt *</label>
+            <select id="property_id" name="property_id" class="form-control" required>
+                <option value="">-- Objekt wählen --</option>
+                {% for prop in properties %}
+                <option value="{{ prop.id }}">{{ prop.name or prop.address }} ({{ prop.total_sqm }} qm)</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="year">Abrechnungsjahr *</label>
+            <input type="number" id="year" name="year" class="form-control" required 
+                   value="2025" min="2020" max="2030">
+        </div>
+        
+        <div class="info-box">
+            <strong>Ablauf:</strong>
+            <ol>
+                <li>Alle Rechnungen des Objekts werden nach BetrKV-Kategorien gruppiert</li>
+                <li>Automatische Verteilung auf Mieter nach gespeicherten Schlüsseln (qm, Personen, Einheiten)</li>
+                <li>PDF-Abrechnung wird generiert</li>
+            </ol>
+            <p class="text-muted">Stellen Sie sicher, dass Mieter und Rechnungen für das Objekt vorhanden sind.</p>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-lg">Abrechnung erstellen</button>
+    </form>
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">🏠</div>
+    <h3>Keine Objekte vorhanden</h3>
+    <p>Legen Sie zuerst ein Wohnobjekt mit Mietern und Rechnungen an.</p>
+    <a href="{{ url_for('property_new') }}" class="btn btn-primary">Objekt anlegen</a>
+</div>
+{% endif %}
+{% endblock %}

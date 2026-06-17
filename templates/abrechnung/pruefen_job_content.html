@@ -1,0 +1,59 @@
+{% set status = job.status %}
+
+{% if status in ('done', 'error') %}
+    <!-- HTMX-Polling stoppen: hx-trigger vom Container entfernen -->
+    <script>
+    document.getElementById('job-card-container').removeAttribute('hx-trigger');
+    </script>
+
+    <!-- Auto-Redirect nach 2 Sekunden -->
+    <meta http-equiv="refresh" content="2;url={% if status == 'done' and job.pruefbericht_id %}{{ url_for('pruefbericht_detail', pb_id=job.pruefbericht_id) }}{% else %}{{ url_for('abrechnung_pruefen') }}{% endif %}">
+{% endif %}
+
+<div class="card" style="text-align:center; padding: 3rem 2rem;">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">
+        {% if status == 'queued' %}⏳{% elif status == 'running' %}⚙️{% elif status == 'done' %}✅{% else %}❌{% endif %}
+    </div>
+    
+    <h2>
+        {% if status == 'queued' %}In Warteschlange{% endif %}
+        {% if status == 'running' %}Analyse läuft...{% endif %}
+        {% if status == 'done' %}Fertig!{% endif %}
+        {% if status == 'error' %}Fehler{% endif %}
+    </h2>
+    
+    <p class="text-muted" style="max-width: 500px; margin: 1rem auto;">
+        {% if status == 'queued' %}
+            Ihre Abrechnung wird gleich analysiert. Die Verarbeitung kann bei Verwendung von CPU-basierten Modellen einige Minuten dauern.
+        {% elif status == 'running' %}
+            Die KI analysiert Ihre Abrechnung im Hintergrund. Diese Seite aktualisiert sich automatisch.
+        {% elif status == 'done' %}
+            Die Prüfung ist abgeschlossen. Sie werden gleich weitergeleitet...
+        {% elif status == 'error' %}
+            {{ job.error_message or 'Ein Fehler ist aufgetreten.' }}
+        {% endif %}
+    </p>
+    
+    <!-- Progress bar -->
+    <div style="max-width: 400px; margin: 1.5rem auto;">
+        <div style="background: var(--border-light); border-radius: 100px; height: 8px; overflow: hidden;">
+            <div style="background: var(--secondary); height: 100%; border-radius: 100px; transition: width 0.5s ease;
+                        width: {% if status == 'queued' %}10%{% elif status == 'running' %}50%{% elif status == 'done' %}100%{% else %}100%{% endif %};">
+            </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-muted);">
+            <span>Upload</span>
+            <span>OCR</span>
+            <span>KI-Analyse</span>
+            <span>Fertig</span>
+        </div>
+    </div>
+    
+    <p class="text-muted" style="font-size: 0.8rem; margin-top: 1.5rem;">
+        Job #{{ job.id }} | {{ job.created_at }} | Status: {{ status }}
+    </p>
+    
+    {% if status == 'error' %}
+    <a href="{{ url_for('abrechnung_pruefen') }}" class="btn btn-primary mt-3">Zurück zur Prüfung</a>
+    {% endif %}
+</div>

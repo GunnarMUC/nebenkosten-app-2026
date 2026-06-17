@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}KI-Assistent - NebenkostenAbrechnung{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>KI-Assistent</h1>
+    <button class="btn btn-sm btn-ghost" hx-post="{{ url_for('assistant_clear') }}" 
+            hx-target="#chat-messages" hx-confirm="Gespräch wirklich löschen?">
+        🗑 Gespräch zurücksetzen
+    </button>
+</div>
+
+<div class="chat-container">
+    <div id="chat-messages" class="chat-messages">
+        <div class="assistant-message">
+            <p>Willkommen! Ich bin Ihr Assistent für Betriebskostenabrechnungen. Ich kann Ihnen helfen bei:</p>
+            <ul>
+                <li>Fragen zu den 17 umlagefähigen Kostenarten nach BetrKV</li>
+                <li>Heizkostenverordnung und Verteilerschlüsseln</li>
+                <li>Abrechnungsfristen und Formalien</li>
+                <li>Formulierung von Klärungsschreiben</li>
+                <li>Allgemeinen Fragen zum Mietrecht (§556 BGB)</li>
+            </ul>
+            <p><strong>Hinweis:</strong> Ich ersetze keine Rechtsberatung, gebe aber fundierte Orientierung.</p>
+        </div>
+    </div>
+    
+    <form class="chat-input-form" 
+          hx-post="{{ url_for('assistant_chat') }}" 
+          hx-target="#chat-messages" 
+          hx-swap="beforeend"
+          hx-indicator="#chat-spinner"
+          onsubmit="this.reset(); return true;">
+        <div class="chat-input-row">
+            <input type="text" name="message" class="chat-input" 
+                   placeholder="Stellen Sie eine Frage..." 
+                   required autocomplete="off">
+            <button type="submit" class="btn btn-primary">Senden</button>
+        </div>
+        <div id="chat-spinner" class="htmx-indicator chat-spinner">
+            <span>KI denkt nach...</span>
+        </div>
+    </form>
+</div>
+
+<div class="suggestion-chips">
+    <span class="text-muted">Vorschläge:</span>
+    <button class="chip" onclick="document.querySelector('.chat-input').value='Welche Kostenarten darf der Vermieter umlegen?'">Welche Kostenarten darf der Vermieter umlegen?</button>
+    <button class="chip" onclick="document.querySelector('.chat-input').value='Wie muss die Heizkostenabrechnung aufgeteilt werden?'">Heizkostenaufteilung?</button>
+    <button class="chip" onclick="document.querySelector('.chat-input').value='Bis wann muss die Abrechnung kommen?'">Abrechnungsfrist?</button>
+    <button class="chip" onclick="document.querySelector('.chat-input').value='Formulierung Klärungsschreiben Nebenkosten'">Klärungschreiben formulieren</button>
+</div>
+{% endblock %}

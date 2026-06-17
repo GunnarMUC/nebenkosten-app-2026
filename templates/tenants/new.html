@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Mieter hinzufügen - NebenkostenAbrechnung{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Mieter hinzufügen</h1>
+    <a href="{{ url_for('property_detail', pid=property_id) }}" class="btn btn-sm btn-ghost">← Zurück</a>
+</div>
+
+<div class="card">
+    <form method="POST" class="form">
+        <div class="form-group">
+            <label for="name">Name *</label>
+            <input type="text" id="name" name="name" class="form-control" required placeholder="Max Mustermann">
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="max@beispiel.de">
+        </div>
+        <div class="form-row">
+            <div class="form-group form-col">
+                <label for="move_in_date">Einzugsdatum *</label>
+                <input type="date" id="move_in_date" name="move_in_date" class="form-control" required>
+            </div>
+            <div class="form-group form-col">
+                <label for="move_out_date">Auszugsdatum</label>
+                <input type="date" id="move_out_date" name="move_out_date" class="form-control">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group form-col">
+                <label for="sqm">Wohnfläche (qm) *</label>
+                <input type="number" id="sqm" name="sqm" class="form-control" required step="0.01" min="1">
+            </div>
+            <div class="form-group form-col">
+                <label for="persons">Personenanzahl</label>
+                <input type="number" id="persons" name="persons" class="form-control" min="1" value="1">
+            </div>
+            <div class="form-group form-col">
+                <label for="vorauszahlung">Vorauszahlung (€/Monat)</label>
+                <input type="number" id="vorauszahlung" name="vorauszahlung" class="form-control" step="0.01" min="0" value="0">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Mieter speichern</button>
+    </form>
+</div>
+{% endblock %}

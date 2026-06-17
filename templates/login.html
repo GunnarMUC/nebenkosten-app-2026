@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Login - NebenkostenAbrechnung{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h1>NebenkostenAbrechnung</h1>
+        <p class="subtitle">Lokale KI-gestützte Betriebskostenabrechnung</p>
+        
+        <form method="POST" action="{{ url_for('login') }}" class="form">
+            <div class="form-group">
+                <label for="username">Benutzername</label>
+                <input type="text" id="username" name="username" class="form-control" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="password">Passwort</label>
+                <input type="password" id="password" name="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Einloggen</button>
+        </form>
+        
+        <p class="auth-links">
+            Noch kein Account? <a href="{{ url_for('register') }}">Registrieren</a>
+        </p>
+        
+        <div class="info-box mt-4">
+            <strong>Demo-Zugang:</strong><br>
+            Benutzername: <code>demo</code> / Passwort: <code>demo</code>
+        </div>
+    </div>
+</div>
+{% endblock %}

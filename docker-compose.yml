@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: nebenkosten-app
+    ports:
+      - "7134:5000"
+    volumes:
+      - ./database:/app/database
+      - ./uploads:/app/uploads
+    environment:
+      - FLASK_ENV=development
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY:-nebenkosten-dev-secret-key}
+      - OLLAMA_HOST=host.docker.internal
+      - OLLAMA_PORT=11434
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-qwen2.5:14b}
+      - DATABASE_PATH=database/app.db
+      - UPLOAD_FOLDER=uploads
+      - MAX_CONTENT_LENGTH=20971520
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped

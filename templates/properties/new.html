@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Neues Objekt - NebenkostenAbrechnung{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Neues Objekt anlegen</h1>
+    <a href="{{ url_for('properties_list') }}" class="btn btn-sm btn-ghost">← Zurück</a>
+</div>
+
+<div class="card">
+    <form method="POST" class="form">
+        <div class="form-group">
+            <label for="name">Objektname (optional)</label>
+            <input type="text" id="name" name="name" class="form-control" placeholder="z.B. Mietshaus Berliner Straße">
+        </div>
+        <div class="form-group">
+            <label for="address">Adresse *</label>
+            <input type="text" id="address" name="address" class="form-control" required 
+                   placeholder="Musterstraße 1, 12345 Berlin">
+        </div>
+        <div class="form-row">
+            <div class="form-group form-col">
+                <label for="total_sqm">Gesamtfläche (qm) *</label>
+                <input type="number" id="total_sqm" name="total_sqm" class="form-control" required 
+                       step="0.01" min="1" placeholder="250">
+            </div>
+            <div class="form-group form-col">
+                <label for="units">Einheiten</label>
+                <input type="number" id="units" name="units" class="form-control" 
+                       min="1" value="1" placeholder="Anzahl Wohnungen">
+            </div>
+            <div class="form-group form-col">
+                <label for="construction_year">Baujahr</label>
+                <input type="number" id="construction_year" name="construction_year" class="form-control"
+                       min="1800" max="2099" placeholder="1990">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Objekt speichern</button>
+    </form>
+</div>
+{% endblock %}

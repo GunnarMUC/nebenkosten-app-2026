@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Registrieren - NebenkostenAbrechnung{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h1>Account erstellen</h1>
+        
+        <form method="POST" action="{{ url_for('register') }}" class="form">
+            <div class="form-group">
+                <label for="username">Benutzername</label>
+                <input type="text" id="username" name="username" class="form-control" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="display_name">Anzeigename (optional)</label>
+                <input type="text" id="display_name" name="display_name" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="password">Passwort</label>
+                <input type="password" id="password" name="password" class="form-control" required minlength="4">
+            </div>
+            <div class="form-group">
+                <label for="role">Rolle</label>
+                <select id="role" name="role" class="form-control">
+                    <option value="vermieter">Vermieter</option>
+                    <option value="mieter">Mieter</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Registrieren</button>
+        </form>
+        
+        <p class="auth-links">
+            Bereits ein Account? <a href="{{ url_for('login') }}">Einloggen</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

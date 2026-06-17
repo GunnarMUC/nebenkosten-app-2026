@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NebenkostenAbrechnung{% endblock %}</title>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    {% if current_user %}
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="{{ url_for('dashboard') }}">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span>NebenkostenPro <small>local</small></span>
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}active{% endif %}">Dashboard</a>
+            {% if current_user.role in ('vermieter', 'admin') %}
+            <a href="{{ url_for('properties_list') }}" class="{% if request.endpoint.startswith('property') %}active{% endif %}">Objekte</a>
+            <a href="{{ url_for('abrechnung_erstellen') }}" class="{% if request.endpoint == 'abrechnung_erstellen' %}active{% endif %}">Abrechnung erstellen</a>
+            {% endif %}
+            <a href="{{ url_for('abrechnung_pruefen') }}" class="{% if request.endpoint.startswith('pruef') or request.endpoint == 'abrechnung_pruefen' %}active{% endif %}">Abrechnung prüfen</a>
+            <a href="{{ url_for('assistant') }}" class="{% if request.endpoint.startswith('assistant') %}active{% endif %}">KI-Assistent</a>
+        </div>
+        <div class="nav-user">
+            <span class="user-name">{{ current_user.display_name or current_user.username }}</span>
+            <span class="badge badge-role">{{ current_user.role }}</span>
+            <a href="{{ url_for('logout') }}" class="btn btn-sm btn-ghost">Logout</a>
+        </div>
+    </nav>
+    {% endif %}
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}" hx-remove="3s">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>NebenkostenAbrechnung - Lokale KI-gestützte Betriebskostenabrechnung &bull; 
+            <span id="ollama-status" hx-get="{{ url_for('ollama_status') }}" hx-trigger="load, every 30s"></span></p>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

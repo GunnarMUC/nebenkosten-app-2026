@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Rechnung hinzufügen - NebenkostenAbrechnung{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Rechnung / Beleg hinzufügen</h1>
+    <a href="{{ url_for('property_detail', pid=property_id) }}" class="btn btn-sm btn-ghost">← Zurück</a>
+</div>
+
+<div class="card">
+    <form method="POST" enctype="multipart/form-data" class="form">
+        <div class="form-group">
+            <label for="betrkv_nr">Kostenart (BetrKV) *</label>
+            <select id="betrkv_nr" name="betrkv_nr" class="form-control" required>
+                {% for bk in betrkv_list %}
+                <option value="{{ bk.nr }}">{{ bk.nr }}. {{ bk.name }} ({{ bk.default_key }})</option>
+                {% endfor %}
+            </select>
+            <small class="text-muted">Verteilerschlüssel wird automatisch gesetzt</small>
+        </div>
+        <div class="form-row">
+            <div class="form-group form-col">
+                <label for="amount">Betrag (€) *</label>
+                <input type="number" id="amount" name="amount" class="form-control" required 
+                       step="0.01" min="0" placeholder="0.00">
+            </div>
+            <div class="form-group form-col">
+                <label for="date">Datum *</label>
+                <input type="date" id="date" name="date" class="form-control" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="vendor">Anbieter / Lieferant</label>
+            <input type="text" id="vendor" name="vendor" class="form-control" placeholder="z.B. Stadtwerke München">
+        </div>
+        <div class="form-group">
+            <label for="description">Beschreibung</label>
+            <textarea id="description" name="description" class="form-control" rows="2" 
+                      placeholder="Optionale Beschreibung der Leistung"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="document">Dokument hochladen (PDF, Bild)</label>
+            <input type="file" id="document" name="document" class="form-control" 
+                   accept=".pdf,.jpg,.jpeg,.png,.tiff,.webp">
+            <small class="text-muted">Max. 20 MB. Die KI kann Rechnungsdaten automatisch extrahieren.</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Rechnung speichern</button>
+    </form>
+</div>
+{% endblock %}

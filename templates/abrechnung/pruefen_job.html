@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Prüfung läuft... - NebenkostenAbrechnung{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🔍 Abrechnungsprüfung</h1>
+</div>
+
+<!-- Container wird NIE ausgetauscht (hx-swap="innerHTML").
+     Nur der Inhalt darin wird alle 4s aktualisiert.
+     Sobald done/error: kein hx-trigger mehr (Server sendet kein hx-trigger-Attribut zurück). -->
+<div id="job-card-container"
+     hx-get="{{ url_for('pruefen_job_status', job_id=job.id) }}"
+     hx-trigger="every 4s"
+     hx-target="#job-card-container"
+     hx-swap="innerHTML">
+
+    {% include 'abrechnung/pruefen_job_content.html' %}
+</div>
+{% endblock %}

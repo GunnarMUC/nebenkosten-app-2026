@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Seite nicht gefunden - NebenkostenAbrechnung{% endblock %}
+
+{% block content %}
+<div class="empty-state">
+    <div class="empty-icon" style="font-size: 64px;">🔍</div>
+    <h1>Seite nicht gefunden</h1>
+    <p>Die angeforderte Seite existiert nicht.</p>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Zum Dashboard</a>
+</div>
+{% endblock %}

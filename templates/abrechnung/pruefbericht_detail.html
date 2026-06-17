@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Pruefbericht - NebenkostenAbrechnung{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Pruefbericht</h1>
+    <div>
+        {% if pruefbericht.pdf_path %}
+        <a href="{{ url_for('pruefbericht_download', pb_id=pruefbericht.id) }}" class="btn btn-primary">PDF herunterladen</a>
+        {% endif %}
+        <a href="{{ url_for('pruefbericht_export_md', pb_id=pruefbericht.id) }}" class="btn btn-sm">als MD exportieren</a>
+        <a href="{{ url_for('abrechnung_pruefen') }}" class="btn btn-sm btn-ghost">Neue Pruefung</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="pruef-summary">
+        {% set ok_count = findings|selectattr('status', 'equalto', 'OK')|list|length %}
+        {% set warn_count = findings|selectattr('status', 'equalto', 'WARNUNG')|list|length %}
+        {% set err_count = findings|selectattr('status', 'equalto', 'FEHLER')|list|length %}
+
+        <div class="stats-row">
+            <div class="stat-box stat-ok">
+                <div class="stat-number">{{ ok_count }}</div>
+                <div class="stat-label">Bestanden</div>
+            </div>
+            <div class="stat-box stat-warn">
+                <div class="stat-number">{{ warn_count }}</div>
+                <div class="stat-label">Warnungen</div>
+            </div>
+            <div class="stat-box stat-error">
+                <div class="stat-number">{{ err_count }}</div>
+                <div class="stat-label">Fehler</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2>Pruefergebnisse</h2>
+{% if findings %}
+<div class="findings-list">
+    {% for f in findings %}
+    <div class="finding-card finding-{{ f.status|lower }}">
+        <div class="finding-status">
+            {% if f.status == 'OK' %}OK{% elif f.status == 'WARNUNG' %}WARN{% else %}FEHLER{% endif %}
+            <span class="badge badge-{{ 'success' if f.status == 'OK' else ('warning' if f.status == 'WARNUNG' else 'error') }}">
+                {{ f.status }}
+            </span>
+        </div>
+        <div class="finding-content">
+            <h4>{{ f.check }}</h4>
+            <p>{{ f.detail }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-muted">Keine Pruefergebnisse vorhanden.</p>
+{% endif %}
+
+<div class="card mt-4">
+    <h3>Naechste Schritte</h3>
+    <ul>
+        <li>Bei <strong>Warnungen</strong>: Pruefen Sie die Details und vergleichen Sie mit Ihrem Mietvertrag</li>
+        <li>Bei <strong>Fehlern</strong>: Kontaktieren Sie Ihren Vermieter schriftlich mit konkreten Rueckfragen</li>
+        <li>Erstellen Sie ggf. ein Klaerungsschreiben ueber den KI-Assistenten</li>
+        <li>Wenden Sie sich an einen <a href="https://www.mieterbund.de" target="_blank">Mieterverein</a> bei Unsicherheiten</li>
+    </ul>
+</div>
+{% endblock %}
